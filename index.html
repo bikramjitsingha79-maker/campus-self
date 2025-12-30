@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campus Shelf - New Year 2026 Edition</title>
+    <title>Campus Shelf - 2026 Excellence</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -17,52 +17,26 @@
             animation: {
               'float': 'float 3s ease-in-out infinite',
               'shimmer': 'shimmer 2s linear infinite',
-              'pulse-subtle': 'pulse-subtle 4s ease-in-out infinite',
-              'frozen-shimmer': 'frozen-shimmer 4s infinite linear',
-              'border-flow': 'border-flow 6s linear infinite',
-              'spin-slow': 'spin 12s linear infinite',
-              'text-reveal': 'text-reveal 1.5s cubic-bezier(0.77, 0, 0.175, 1) forwards',
-              'crystal-glow': 'crystal-glow 4s ease-in-out infinite',
-              'firework': 'firework 2s infinite ease-out',
-              'gold-shimmer': 'gold-shimmer 3s linear infinite',
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'gold-glow': 'gold-glow 3s ease-in-out infinite',
+              'slide-up': 'slide-up 0.5s ease-out forwards',
             },
             keyframes: {
               float: {
                 '0%, 100%': { transform: 'translateY(0)' },
-                '50%': { transform: 'translateY(-8px)' },
+                '50%': { transform: 'translateY(-10px)' },
               },
               shimmer: {
                 '0%': { backgroundPosition: '-200% 0' },
                 '100%': { backgroundPosition: '200% 0' },
               },
-              'pulse-subtle': {
-                '0%, 100%': { opacity: 1 },
-                '50%': { opacity: 0.8 },
+              'gold-glow': {
+                '0%, 100%': { filter: 'drop-shadow(0 0 5px rgba(255, 215, 0, 0.4))' },
+                '50%': { filter: 'drop-shadow(0 0 15px rgba(255, 215, 0, 0.8))' }
               },
-              'frozen-shimmer': {
-                '0%': { transform: 'translateX(-150%) skewX(-20deg)' },
-                '40%, 100%': { transform: 'translateX(150%) skewX(-20deg)' },
-              },
-              'border-flow': {
-                '0%': { 'background-position': '0% 50%' },
-                '50%': { 'background-position': '100% 50%' },
-                '100%': { 'background-position': '0% 50%' },
-              },
-              'text-reveal': {
-                '0%': { transform: 'translateY(100%)', opacity: '0' },
+              'slide-up': {
+                '0%': { transform: 'translateY(20px)', opacity: '0' },
                 '100%': { transform: 'translateY(0)', opacity: '1' }
-              },
-              'crystal-glow': {
-                '0%, 100%': { filter: 'drop-shadow(0 0 5px rgba(255,215,0,0.2))' },
-                '50%': { filter: 'drop-shadow(0 0 20px rgba(255,215,0,0.6))' }
-              },
-              firework: {
-                '0%': { transform: 'scale(1)', opacity: '1' },
-                '100%': { transform: 'scale(1.5)', opacity: '0' }
-              },
-              'gold-shimmer': {
-                '0%': { 'background-position': '0% 50%' },
-                '100%': { 'background-position': '100% 50%' }
               }
             }
           }
@@ -73,16 +47,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,700;1,900&display=swap" rel="stylesheet">
     <style>
         body {
-            transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: background-color 0.4s ease;
             overflow-x: hidden;
-            background: #fdfaf0; /* Light Festive Cream */
+            background: #fdfaf5; /* Cream */
         }
         
         .dark body {
-            background: #020617; /* Midnight Blue */
+            background: #020617; /* Midnight */
         }
 
-        /* New Year 2026 Theme: Gold & Midnight Blue */
         .gold-text {
             background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
             -webkit-background-clip: text;
@@ -91,62 +64,17 @@
             font-weight: 900;
         }
 
-        .festive-container {
-            border: 2px solid #bf953f;
-            box-shadow: 0 0 15px rgba(191, 149, 63, 0.3);
+        .premium-card {
+            background: #ffffff;
+            border: 1px solid rgba(191, 149, 63, 0.15);
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .firework-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 50;
-            overflow: hidden;
-            opacity: 0.15;
-        }
-
-        .frozen-container {
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(16px) saturate(180%);
-            -webkit-backdrop-filter: blur(16px) saturate(180%);
-        }
-
-        .frozen-shimmer-overlay::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 50%;
-            height: 100%;
-            background: linear-gradient(
-                90deg, 
-                transparent, 
-                rgba(255, 215, 0, 0.4), 
-                transparent
-            );
-            animation: frozen-shimmer 4s infinite linear;
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        .shimmer-text {
-            background: linear-gradient(
-                to right,
-                #bf953f 0%,
-                #fcf6ba 25%,
-                #b38728 50%,
-                #fbf5b7 75%,
-                #bf953f 100%
-            );
-            background-size: 200% auto;
-            color: transparent;
-            -webkit-background-clip: text;
-            background-clip: text;
-            animation: shimmer 3s linear infinite;
+        .dark .premium-card {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3);
         }
 
         .no-scrollbar::-webkit-scrollbar {
@@ -157,9 +85,21 @@
             scrollbar-width: none;
         }
 
-        .stagger-1 { animation-delay: 100ms; }
-        .stagger-2 { animation-delay: 200ms; }
-        .stagger-3 { animation-delay: 300ms; }
+        .price-text {
+            color: #10b981; /* Emerald */
+            text-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+        }
+
+        .dark .price-text {
+            color: #34d399; /* Bright Emerald */
+        }
+
+        .discount-badge {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            font-weight: 900;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
     </style>
 <script type="importmap">
 {
@@ -173,13 +113,6 @@
 </script>
 </head>
 <body>
-    <div class="firework-overlay">
-        <!-- CSS-only fireworks placeholder simulation elements could go here if desired -->
-        <div style="position: absolute; top: 20%; left: 30%; font-size: 20px;" class="animate-firework text-yellow-500"><i class="fas fa-sparkles"></i></div>
-        <div style="position: absolute; top: 10%; left: 70%; font-size: 30px;" class="animate-firework text-red-500"><i class="fas fa-certificate"></i></div>
-        <div style="position: absolute; top: 60%; left: 10%; font-size: 25px;" class="animate-firework text-blue-500"><i class="fas fa-star"></i></div>
-        <div style="position: absolute; top: 80%; left: 80%; font-size: 40px;" class="animate-firework text-gold-500"><i class="fas fa-bolt"></i></div>
-    </div>
     <div id="root"></div>
 </body>
 </html>

@@ -1,8 +1,37 @@
 
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 
 // Always use the process.env.API_KEY directly as per guidelines
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
+export const getSearchSuggestions = async (query: string) => {
+  if (!query || query.length < 2) return [];
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      contents: `Provide 5 concise search suggestions for a book-sharing app based on this input: "${query}". Return only the titles as a list.`,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.STRING,
+          },
+        },
+      }
+    });
+    
+    try {
+      return JSON.parse(response.text);
+    } catch {
+      // Fallback if JSON parsing fails
+      return response.text.split('\n').map(s => s.replace(/^\d+\.\s*/, '').trim()).filter(Boolean);
+    }
+  } catch (error) {
+    console.error("Suggestion Error:", error);
+    return [];
+  }
+};
 
 export const getAIAssistantResponse = async (userMessage: string, context?: string) => {
   try {
