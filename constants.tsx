@@ -27,12 +27,16 @@ export const MOCK_BOOKS: Book[] = [
     college: 'MIT',
     branch: 'Computer Science',
     location: 'Main Library, Floor 2',
+    // Fix: Added missing required fields area, phoneNumber, altContactNumber
+    area: 'North Campus',
+    phoneNumber: '9988776655',
+    contactNumber: '9988776655',
+    altContactNumber: '9988776644',
     pickupDate: '2024-10-24',
     pickupTime: '16:00',
     marketPrice: 1200,
     currentPrice: 450,
-    imageUrl: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&q=80&w=400&h=300',
-    contactNumber: '9988776655'
+    imageUrl: 'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&q=80&w=400&h=300'
   },
   {
     id: 'st1',
@@ -45,6 +49,11 @@ export const MOCK_BOOKS: Book[] = [
     college: 'Stanford',
     branch: 'Computer Science',
     location: 'Gates Building Lounge',
+    // Fix: Added missing required fields area, phoneNumber, contactNumber, altContactNumber
+    area: 'Engineering Quad',
+    phoneNumber: '9876543211',
+    contactNumber: '9876543211',
+    altContactNumber: '9876543212',
     pickupDate: '2024-10-25',
     pickupTime: '14:00',
     marketPrice: 900,
@@ -62,6 +71,11 @@ export const MOCK_BOOKS: Book[] = [
     college: 'MIT',
     branch: 'Social Sciences',
     location: 'Hayden Library',
+    // Fix: Added missing required fields area, phoneNumber, contactNumber, altContactNumber
+    area: 'West Campus',
+    phoneNumber: '9123456780',
+    contactNumber: '9123456780',
+    altContactNumber: '9123456781',
     marketPrice: 450,
     currentPrice: 120,
     imageUrl: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=400&h=300'
@@ -77,6 +91,11 @@ export const MOCK_BOOKS: Book[] = [
     college: 'MIT',
     branch: 'Architecture',
     location: 'Media Lab Basement',
+    // Fix: Added missing required fields area, phoneNumber, contactNumber, altContactNumber
+    area: 'Main Quad',
+    phoneNumber: '9988112233',
+    contactNumber: '9988112233',
+    altContactNumber: '9988112244',
     marketPrice: 850,
     currentPrice: 400,
     imageUrl: 'https://images.unsplash.com/photo-1519337265831-281ec6cc8514?auto=format&fit=crop&q=80&w=400&h=300'
@@ -92,6 +111,11 @@ export const MOCK_BOOKS: Book[] = [
     college: 'Harvard',
     branch: 'Chemical Engineering',
     location: 'Science Center Basement',
+    // Fix: Added missing required fields area, phoneNumber, contactNumber, altContactNumber
+    area: 'Science Plaza',
+    phoneNumber: '9554433221',
+    contactNumber: '9554433221',
+    altContactNumber: '9554433222',
     pickupDate: '2024-10-26',
     pickupTime: '11:00',
     marketPrice: 1500,
@@ -109,6 +133,11 @@ export const MOCK_BOOKS: Book[] = [
     college: 'Delhi University',
     branch: 'Economics',
     location: 'North Campus Library',
+    // Fix: Added missing required fields area, phoneNumber, contactNumber, altContactNumber
+    area: 'North Campus',
+    phoneNumber: '9811002233',
+    contactNumber: '9811002233',
+    altContactNumber: '9811002244',
     pickupDate: '2024-10-24',
     pickupTime: '15:30',
     marketPrice: 500,
@@ -126,6 +155,11 @@ export const MOCK_BOOKS: Book[] = [
     college: 'MIT',
     branch: 'Software Engineering',
     location: 'Student Union Hub',
+    // Fix: Added missing required fields area, phoneNumber, contactNumber, altContactNumber
+    area: 'East Campus',
+    phoneNumber: '9000011122',
+    contactNumber: '9000011122',
+    altContactNumber: '9000011133',
     pickupDate: 'Every Day',
     pickupTime: '09:00 - 18:00',
     marketPrice: 650,
@@ -143,6 +177,11 @@ export const MOCK_BOOKS: Book[] = [
     college: 'MIT',
     branch: 'Architecture',
     location: 'Design Studio 4',
+    // Fix: Added missing required fields area, phoneNumber, contactNumber, altContactNumber
+    area: 'South Campus',
+    phoneNumber: '9777665544',
+    contactNumber: '9777665544',
+    altContactNumber: '9777665533',
     marketPrice: 1800,
     currentPrice: 750,
     imageUrl: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&q=80&w=400&h=300'
@@ -158,6 +197,11 @@ export const MOCK_BOOKS: Book[] = [
     college: 'Stanford',
     branch: 'Medicine',
     location: 'Medical Quad',
+    // Fix: Added missing required fields area, phoneNumber, contactNumber, altContactNumber
+    area: 'Medical Hub',
+    phoneNumber: '9666554433',
+    contactNumber: '9666554433',
+    altContactNumber: '9666554422',
     marketPrice: 3500,
     currentPrice: 1900,
     imageUrl: 'https://images.unsplash.com/photo-1576086213369-97a306dca664?auto=format&fit=crop&q=80&w=400&h=300'

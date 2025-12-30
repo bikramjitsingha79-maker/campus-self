@@ -31,7 +31,7 @@ export interface User {
   year: string;
   role: UserRole;
   donationScore: number;
-  campusCoins: number; // Added for loyalty system
+  campusCoins: number;
   phoneNumber?: string;
   altPhoneNumber?: string;
 }
@@ -45,15 +45,17 @@ export interface Book {
   isInstitutionDonated: boolean;
   donorId: string;
   college: string;
-  branch: string; // Used as Subject in UI
+  branch: string; 
   location: string;
+  area: string; // New field
+  phoneNumber: string; // New field
+  contactNumber: string; // New field
+  altContactNumber: string; // New field
   pickupDate?: string;
   pickupTime?: string;
   imageUrl?: string;
   marketPrice?: number;
   currentPrice?: number;
-  contactNumber?: string;
-  altContactNumber?: string;
 }
 
 export interface BookRequest {
