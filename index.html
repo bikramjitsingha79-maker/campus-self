@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Shelf</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              brand: ['"Playfair Display"', 'serif'],
+            },
+            animation: {
+              'float': 'float 3s ease-in-out infinite',
+              'shimmer': 'shimmer 2s linear infinite',
+              'pulse-subtle': 'pulse-subtle 4s ease-in-out infinite',
+              'frozen-shimmer': 'frozen-shimmer 4s infinite linear',
+              'border-flow': 'border-flow 6s linear infinite',
+              'spin-slow': 'spin 8s linear infinite',
+              'text-reveal': 'text-reveal 1.5s cubic-bezier(0.77, 0, 0.175, 1) forwards',
+              'crystal-glow': 'crystal-glow 4s ease-in-out infinite',
+            },
+            keyframes: {
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-5px)' },
+              },
+              shimmer: {
+                '0%': { backgroundPosition: '-200% 0' },
+                '100%': { backgroundPosition: '200% 0' },
+              },
+              'pulse-subtle': {
+                '0%, 100%': { opacity: 1 },
+                '50%': { opacity: 0.8 },
+              },
+              'frozen-shimmer': {
+                '0%': { transform: 'translateX(-150%) skewX(-20deg)' },
+                '40%, 100%': { transform: 'translateX(150%) skewX(-20deg)' },
+              },
+              'border-flow': {
+                '0%': { 'background-position': '0% 50%' },
+                '50%': { 'background-position': '100% 50%' },
+                '100%': { 'background-position': '0% 50%' },
+              },
+              'text-reveal': {
+                '0%': { transform: 'translateY(100%)', opacity: '0' },
+                '100%': { transform: 'translateY(0)', opacity: '1' }
+              },
+              'crystal-glow': {
+                '0%, 100%': { filter: 'drop-shadow(0 0 5px rgba(255,255,255,0.2))' },
+                '50%': { filter: 'drop-shadow(0 0 15px rgba(255,255,255,0.6))' }
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,700;1,900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-x: hidden;
+            background: #f8fafc;
+        }
+        
+        .dark body {
+            background: #020617;
+        }
+
+        /* Frozen Effect Utilities */
+        .frozen-container {
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+        }
+
+        .frozen-shimmer-overlay::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(
+                90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.6), 
+                transparent
+            );
+            animation: frozen-shimmer 4s infinite linear;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .dark .frozen-shimmer-overlay::after {
+            background: linear-gradient(
+                90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.3), 
+                transparent
+            );
+        }
+
+        /* Icy Frozen Border Flow */
+        .crystal-border {
+            background: linear-gradient(90deg, #ffffff, #e0f2fe, #bae6fd, #ffffff);
+            background-size: 300% 300%;
+            animation: border-flow 4s ease infinite;
+        }
+
+        /* Masked Shimmering Text Effect */
+        .shimmer-text {
+            background: linear-gradient(
+                to right,
+                rgba(255,255,255,1) 0%,
+                rgba(255,255,255,0.4) 25%,
+                rgba(255,255,255,1) 50%,
+                rgba(255,255,255,0.4) 75%,
+                rgba(255,255,255,1) 100%
+            );
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shimmer 3s linear infinite;
+        }
+
+        /* Hide scrollbar utility */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Staggered entry delays utility */
+        .stagger-1 { animation-delay: 100ms; }
+        .stagger-2 { animation-delay: 200ms; }
+        .stagger-3 { animation-delay: 300ms; }
+
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.34.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3"
+  }
+}
+</script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>

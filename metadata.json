@@ -1,0 +1,8 @@
+{
+  "name": " CAMPUS SHELF",
+  "description": "A high-contrast, mobile-first campus book donation and exchange platform featuring urgency-based sorting, gamified 'Campus Hero' badges, and institutional support shelves.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
