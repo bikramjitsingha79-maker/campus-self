@@ -5,7 +5,6 @@ import BookCard from './components/BookCard';
 import NotificationBar from './components/NotificationBar';
 import AddBookForm from './components/AddBookForm';
 import FeedbackForm from './components/FeedbackForm';
-import LoginView from './components/LoginView';
 import { Book, BookRequest, ViewState, User, Language, Segment, ThemePalette, UserRole } from './types';
 import { MOCK_BOOKS, CURRENT_USER } from './constants';
 import { getBookRecommendation, findNearbyLibraries, getBookPreview, searchEBooks, getCampusNetworkingTip, getAIAssistantResponse } from './services/geminiService';
@@ -26,8 +25,9 @@ const ViewContainer: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 );
 
 const App: React.FC = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => localStorage.getItem('isLoggedIn') === 'true');
-  const [isBooting, setIsBooting] = useState<boolean>(false);
+  // Security removed: App is now free for all by default
+  const [isLoggedIn] = useState<boolean>(true); 
+  const [isBooting, setIsBooting] = useState<boolean>(true);
   const [activeSegment, setActiveSegment] = useState<Segment>('BUYER');
   const [activeView, setActiveView] = useState<ViewState>('EXPLORE');
   const [books, setBooks] = useState<Book[]>(MOCK_BOOKS);
@@ -89,6 +89,12 @@ const App: React.FC = () => {
   const activeThemeColor = currentPalette[activeSegment];
 
   useEffect(() => {
+    // Initial boot animation
+    const timer = setTimeout(() => setIsBooting(false), 2500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
     darkMode ? document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark');
     localStorage.setItem('darkMode', darkMode.toString());
   }, [darkMode]);
@@ -99,9 +105,8 @@ const App: React.FC = () => {
   }, [language, themePalette]);
 
   useEffect(() => {
-    localStorage.setItem('isLoggedIn', isLoggedIn.toString());
     localStorage.setItem('userData', JSON.stringify(user));
-  }, [isLoggedIn, user]);
+  }, [user]);
 
   useEffect(() => {
     if (activeView === 'AI_ASSISTANT') {
@@ -135,23 +140,9 @@ const App: React.FC = () => {
     };
   }, [isDragging]);
 
-  const handleLogin = (email: string, college: string) => {
-    setIsBooting(true);
-    const nameFromEmail = email.split('@')[0];
-    const newUser = { ...user, email, college, name: nameFromEmail.charAt(0).toUpperCase() + nameFromEmail.slice(1) };
-    setTimeout(() => {
-      setUser(newUser);
-      setIsLoggedIn(true);
-      setIsBooting(false);
-      setActiveView('EXPLORE');
-      showNotification(`Welcome to Campus Shelf, ${newUser.name}!`);
-    }, 2000); 
-  };
-
   const handleLogout = () => {
-    setIsLoggedIn(false);
-    localStorage.removeItem('isLoggedIn');
-    showNotification("Logged out successfully", "info");
+    showNotification("Resetting festive session...", "info");
+    setTimeout(() => window.location.reload(), 1000);
   };
 
   const handleSegmentChange = (segment: Segment) => {
@@ -182,7 +173,7 @@ const App: React.FC = () => {
   const handleConnect = (userId: string, name: string) => {
     if (connectedUsers.includes(userId)) return;
     setConnectedUsers(prev => [...prev, userId]);
-    showNotification(`Connection request sent to ${name}!`);
+    showNotification(`Festive request sent to ${name}!`);
   };
 
   const handleGetIcebreaker = async (branch: string) => {
@@ -197,7 +188,7 @@ const App: React.FC = () => {
     if (!book) return;
 
     if (requests.some(r => r.bookId === bookId)) {
-      showNotification("You've already requested this book", "warning");
+      showNotification("Already requested this gift!", "warning");
       return;
     }
 
@@ -211,9 +202,9 @@ const App: React.FC = () => {
     };
 
     setRequests(prev => [...prev, newRequest]);
-    const updatedUser = { ...user, campusCoins: user.campusCoins + 2 };
+    const updatedUser = { ...user, campusCoins: user.campusCoins + 5 }; // Boost for New Year
     setUser(updatedUser);
-    showNotification(`Request sent! You earned 2 Campus Coins! ✨`, 'success');
+    showNotification(`New Year Request sent! +5 Bonus Coins! 🎆`, 'success');
   };
 
   const handleSendAiChatMessage = async () => {
@@ -222,7 +213,7 @@ const App: React.FC = () => {
     setAiChatInput('');
     setAiChatHistory(prev => [...prev, {role: 'user', text: msg}]);
     setIsLoadingFeature(true);
-    const botResponse = await getAIAssistantResponse(msg, `User is ${user.name} from ${user.college}, branch ${user.branch}`);
+    const botResponse = await getAIAssistantResponse(msg, `User is ${user.name} from ${user.college}, branch ${user.branch}. It is currently New Year 2026 celebration time.`);
     setAiChatHistory(prev => [...prev, {role: 'bot', text: botResponse || '...' }]);
     setIsLoadingFeature(false);
   };
@@ -236,154 +227,58 @@ const App: React.FC = () => {
           <ViewContainer>
             <div className="flex items-center gap-4 mb-2">
               <button onClick={() => setActiveView('EXPLORE')} className="w-10 h-10 rounded-xl bg-white/40 dark:bg-slate-800/40 flex items-center justify-center text-slate-500 transition-all"><i className="fas fa-arrow-left"></i></button>
-              <h2 className="text-xl font-black text-black dark:text-white uppercase tracking-tight">AI Assistant</h2>
+              <h2 className="text-xl font-black text-black dark:text-white uppercase tracking-tight">AI 2026 Navigator</h2>
             </div>
-            <div className="bg-white/60 dark:bg-slate-900/80 backdrop-blur-3xl p-6 rounded-[3rem] border border-white/50 shadow-2xl h-[70vh] flex flex-col frozen-container">
-              <div className="flex-1 overflow-y-auto no-scrollbar space-y-4 mb-4">
+            <div className="bg-white/70 dark:bg-slate-900/90 backdrop-blur-3xl p-6 rounded-[3.5rem] border-4 border-yellow-500/30 shadow-2xl h-[70vh] flex flex-col frozen-container relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-500/40 to-transparent"></div>
+              
+              <div className="flex-1 overflow-y-auto no-scrollbar space-y-5 mb-4 p-2">
                 {aiChatHistory.length === 0 && (
-                  <div className="text-center py-20 opacity-40">
-                    <i className="fas fa-user-astronaut text-4xl mb-4"></i>
-                    <p className="text-[10px] font-black uppercase tracking-widest">How can I help you today, {user.name}?</p>
-                    <p className="text-[8px] font-bold uppercase tracking-widest mt-2 px-10">I can suggest books, find resources, or help fix app issues.</p>
+                  <div className="text-center py-10 animate-in fade-in zoom-in duration-1000">
+                    <div className="w-24 h-24 bg-yellow-100 dark:bg-yellow-900/30 rounded-[2.5rem] flex items-center justify-center mx-auto mb-6 shadow-inner animate-float border-2 border-yellow-500/20">
+                      <i className="fas fa-glass-cheers text-yellow-600 text-4xl"></i>
+                    </div>
+                    <h3 className="text-lg font-black uppercase tracking-tight text-slate-900 dark:text-white">Happy New Year 2026!</h3>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mt-2 px-10">I am your festive campus guide. Need resolutions, books, or app help?</p>
                   </div>
                 )}
                 {aiChatHistory.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2`}>
-                    <div className={`max-w-[85%] p-4 rounded-[1.5rem] text-[11px] font-bold tracking-tight leading-relaxed shadow-sm ${msg.role === 'user' ? 'bg-pink-600 text-white rounded-tr-none' : 'bg-white dark:bg-slate-800 dark:text-white rounded-tl-none border border-slate-100 dark:border-slate-700'}`}>
+                    <div className={`max-w-[85%] p-5 rounded-[1.8rem] text-[12px] font-bold tracking-tight leading-relaxed shadow-lg ${msg.role === 'user' ? 'bg-indigo-600 text-white rounded-tr-none' : 'bg-white dark:bg-slate-800 dark:text-white rounded-tl-none border-2 border-yellow-500/10'}`}>
                       {msg.text}
                     </div>
                   </div>
                 ))}
                 {isLoadingFeature && (
                   <div className="flex justify-start">
-                    <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-[1.5rem] rounded-tl-none animate-pulse">
-                      <div className="flex gap-1">
-                        <div className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce"></div>
-                        <div className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce delay-75"></div>
-                        <div className="w-1.5 h-1.5 bg-slate-300 rounded-full animate-bounce delay-150"></div>
+                    <div className="p-5 bg-white/80 dark:bg-slate-800 rounded-[1.8rem] rounded-tl-none animate-pulse border border-yellow-500/10">
+                      <div className="flex gap-1.5">
+                        <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce delay-75"></div>
+                        <div className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce delay-150"></div>
                       </div>
                     </div>
                   </div>
                 )}
                 <div ref={chatEndRef}></div>
               </div>
-              <div className="relative">
+
+              <div className="relative pt-2">
                 <input 
                   type="text" 
-                  className="w-full pl-6 pr-14 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl text-[11px] font-black uppercase focus:outline-none focus:ring-4 focus:ring-pink-500/10 placeholder:text-slate-400"
-                  placeholder="Ask me anything..."
+                  className="w-full pl-6 pr-16 py-5 bg-slate-50 dark:bg-slate-900/50 border-2 border-yellow-500/10 rounded-[2rem] text-[12px] font-black uppercase focus:outline-none focus:ring-8 focus:ring-yellow-500/5 focus:border-yellow-500 placeholder:text-slate-400 transition-all shadow-inner"
+                  placeholder="Ask for 2026 suggestions..."
                   value={aiChatInput}
                   onChange={(e) => setAiChatInput(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSendAiChatMessage()}
                 />
                 <button 
                   onClick={handleSendAiChatMessage}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-pink-600 text-white rounded-xl flex items-center justify-center shadow-lg active:scale-90 transition-all"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 bg-yellow-600 text-white rounded-2xl flex items-center justify-center shadow-xl active:scale-90 transition-all"
                 >
-                  <i className="fas fa-paper-plane text-xs"></i>
+                  <i className="fas fa-paper-plane text-sm"></i>
                 </button>
               </div>
-            </div>
-          </ViewContainer>
-        );
-
-      case 'CAMPUS_HUB':
-        return (
-          <ViewContainer>
-            <div className="flex items-center gap-4 mb-2">
-              <button onClick={() => setActiveView('EXPLORE')} className="w-10 h-10 rounded-xl bg-white/40 dark:bg-slate-800/40 flex items-center justify-center text-slate-500 hover:text-black transition-all"><i className="fas fa-arrow-left"></i></button>
-              <h2 className="text-xl font-black text-black dark:text-white uppercase tracking-tight">Campus Hub</h2>
-            </div>
-
-            <div className="relative group mb-6">
-              <div className="absolute -inset-1 rounded-[2.5rem] crystal-border blur opacity-20"></div>
-              <div className="relative flex items-center bg-white/80 dark:bg-white/90 backdrop-blur-3xl rounded-[2.5rem] overflow-hidden border border-white/40 shadow-xl p-1">
-                <i className="fas fa-search absolute left-6 text-slate-400"></i>
-                <input 
-                  type="text" 
-                  placeholder="Find peers by name or branch..."
-                  className="w-full pl-14 pr-6 py-4 bg-transparent text-[11px] font-black text-slate-900 focus:outline-none uppercase placeholder:text-slate-400"
-                  value={hubSearch}
-                  onChange={(e) => setHubSearch(e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-600 ml-2">Active Students at {user.college}</h3>
-              <div className="grid gap-4">
-                {MOCK_CAMPUS_USERS.filter(u => u.name.toLowerCase().includes(hubSearch.toLowerCase()) || u.branch.toLowerCase().includes(hubSearch.toLowerCase())).map((peer) => (
-                  <div key={peer.id} className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-3xl p-6 rounded-[2.5rem] border border-white/50 shadow-xl flex items-center gap-5 group hover:scale-[1.02] transition-transform frozen-container frozen-shimmer-overlay">
-                    <div className="relative shrink-0">
-                       <div className="w-16 h-16 rounded-[1.5rem] bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 flex items-center justify-center text-xl font-black shadow-inner">
-                         {peer.name.charAt(0)}
-                       </div>
-                       <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-lg flex items-center justify-center text-white text-[10px] shadow-lg">
-                         <i className="fas fa-check"></i>
-                       </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tight">{peer.name}</h4>
-                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest truncate">{peer.branch} • {peer.year}</p>
-                      <div className="flex items-center gap-3 mt-2">
-                        <span className="text-[8px] font-black text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-2 py-1 rounded-md uppercase flex items-center gap-1">
-                          <i className="fas fa-coins"></i> {peer.campusCoins} Coins
-                        </span>
-                        <button 
-                          onClick={() => handleGetIcebreaker(peer.branch)}
-                          className="text-[8px] font-black text-indigo-500 hover:underline uppercase"
-                        >
-                          AI Icebreaker
-                        </button>
-                      </div>
-                    </div>
-                    <button 
-                      onClick={() => handleConnect(peer.id, peer.name)}
-                      className={`px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${connectedUsers.includes(peer.id) ? 'bg-emerald-500 text-white shadow-emerald-200' : 'bg-slate-900 text-white hover:bg-indigo-600'}`}
-                    >
-                      {connectedUsers.includes(peer.id) ? 'Pending' : 'Connect'}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {aiIcebreaker && (
-              <div className="mt-10 p-8 bg-indigo-600 text-white rounded-[3rem] border border-white/20 animate-in zoom-in duration-500 shadow-2xl relative overflow-hidden frozen-container">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 animate-pulse"></div>
-                <h4 className="text-[10px] font-black uppercase tracking-[0.3em] mb-4 opacity-70">AI Match Assistant</h4>
-                <p className="text-sm font-black italic leading-relaxed">"{aiIcebreaker}"</p>
-                <button onClick={() => setAiIcebreaker('')} className="mt-6 text-[9px] font-black uppercase tracking-widest bg-white/20 px-4 py-2 rounded-lg hover:bg-white/40 transition-colors">Clear Icebreaker</button>
-              </div>
-            )}
-          </ViewContainer>
-        );
-
-      case 'AI_SUGGEST':
-        return (
-          <ViewContainer>
-            <div className="flex items-center gap-4 mb-2">
-              <button onClick={() => setActiveView('EXPLORE')} className="w-10 h-10 rounded-xl bg-white/40 dark:bg-slate-800/40 flex items-center justify-center text-slate-500 transition-all"><i className="fas fa-arrow-left"></i></button>
-              <h2 className="text-xl font-black text-black dark:text-white uppercase tracking-tight">AI Book Suggest</h2>
-            </div>
-            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-3xl p-8 rounded-[3rem] border-2 border-white/50 shadow-2xl space-y-6 frozen-container">
-              <div className="space-y-4">
-                <div>
-                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Course Name</label>
-                  <input type="text" placeholder="e.g. Computer Science" className="w-full px-5 py-4 bg-white/60 dark:bg-slate-800/60 rounded-2xl text-sm font-black uppercase border border-white/40 focus:outline-none" value={aiSuggestForm.course} onChange={(e) => setAiSuggestForm({...aiSuggestForm, course: e.target.value})} />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Semester</label>
-                  <select className="w-full px-5 py-4 bg-white/60 dark:bg-slate-800/60 rounded-2xl text-sm font-black uppercase border border-white/40 focus:outline-none cursor-pointer" value={aiSuggestForm.semester} onChange={(e) => setAiSuggestForm({...aiSuggestForm, semester: e.target.value})}>
-                    <option value="">Select Semester</option>
-                    {[1,2,3,4,5,6,7,8].map(s => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                </div>
-              </div>
-              <button onClick={handleGetAISuggestion} disabled={isLoadingFeature} className="w-full py-5 bg-pink-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all">
-                {isLoadingFeature ? "Analyzing..." : "Generate Suggestion"}
-              </button>
-              {aiRecommendation && <div className="mt-8 p-6 bg-pink-50/50 rounded-3xl border border-pink-200/50 animate-in zoom-in duration-500"><p className="text-sm font-bold italic leading-relaxed">"{aiRecommendation}"</p></div>}
             </div>
           </ViewContainer>
         );
@@ -391,294 +286,57 @@ const App: React.FC = () => {
       case 'EXPLORE':
         return (
           <ViewContainer>
-            {/* FEATURED CAMPAIGNS - Shown above the options */}
-            <div className="space-y-4 animate-in slide-in-from-top-12 duration-1000 fill-mode-both">
-              {/* Permanent 70% Discount Banner */}
-              {showPromo && (
-                <div className="relative overflow-hidden bg-gradient-to-br from-pink-600 via-rose-500 to-indigo-600 rounded-[2.5rem] p-8 text-white shadow-2xl border border-white/20 frozen-container frozen-shimmer-overlay">
-                  <button 
-                    onClick={() => setShowPromo(false)} 
-                    className="absolute top-4 right-4 w-8 h-8 bg-white/20 hover:bg-white/40 rounded-full flex items-center justify-center transition-all z-20"
-                  >
-                    <i className="fas fa-times text-[10px]"></i>
-                  </button>
-                  <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div className="text-center md:text-left">
-                      <div className="mb-2 inline-block bg-white/20 px-4 py-1 rounded-full text-[8px] font-black uppercase tracking-[0.3em]">Permanent Reward</div>
-                      <h2 className="text-3xl font-black uppercase tracking-tighter italic mb-1 shimmer-text leading-none">Year Sale</h2>
-                      <p className="text-[10px] font-bold text-pink-50/80 uppercase tracking-widest">Collect 30 Coins for 70% Off All Books</p>
-                    </div>
-                    <div className="bg-white text-pink-600 px-6 py-3 rounded-2xl flex items-baseline gap-2 shadow-lg transform rotate-2">
-                      <span className="text-4xl font-black tracking-tighter">70%</span>
-                      <span className="text-[10px] font-black uppercase">OFF</span>
-                    </div>
+            {/* FESTIVE 2026 HERO BANNER */}
+            <div className="relative overflow-hidden bg-gradient-to-br from-indigo-900 via-slate-900 to-black rounded-[3.5rem] p-10 text-white shadow-2xl border-4 border-yellow-500/30 frozen-container frozen-shimmer-overlay animate-in slide-in-from-top-12 duration-1000">
+               <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500/10 rounded-full -mr-32 -mt-32 blur-3xl animate-pulse"></div>
+               <div className="absolute bottom-0 left-0 w-48 h-48 bg-indigo-500/10 rounded-full -ml-24 -mb-24 blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+               
+               <div className="relative z-10 flex flex-col items-center text-center gap-4">
+                  <div className="inline-block px-6 py-2 bg-yellow-500/20 text-yellow-400 rounded-full text-[10px] font-black uppercase tracking-[0.5em] border border-yellow-500/20 mb-2">
+                    Campus Shelf • Celebration
                   </div>
-                </div>
-              )}
-
-              {/* Flash 50% Discount Pop-up Banner */}
-              {showFlashPromo && (
-                <div className="relative overflow-hidden bg-slate-900 dark:bg-slate-800 rounded-[2.5rem] p-8 text-white shadow-xl border-2 border-emerald-500/30 frozen-container frozen-shimmer-overlay">
-                  <button 
-                    onClick={() => setShowFlashPromo(false)} 
-                    className="absolute top-4 right-4 w-8 h-8 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all z-20"
-                  >
-                    <i className="fas fa-times text-[10px]"></i>
-                  </button>
-                  <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div className="text-center md:text-left">
-                      <div className="mb-2 inline-block bg-emerald-500/20 text-emerald-400 px-4 py-1 rounded-full text-[8px] font-black uppercase tracking-[0.3em] border border-emerald-500/20">Flash Campaign</div>
-                      <h2 className="text-3xl font-black uppercase tracking-tighter italic mb-1 text-emerald-400 leading-none">Flash 50</h2>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-snug">Limited time 50% discount on <br/> any purchase from the Shelf!</p>
-                    </div>
-                    <div className="bg-emerald-500 text-white px-6 py-3 rounded-2xl flex items-baseline gap-2 shadow-[0_0_20px_rgba(16,185,129,0.3)] transform -rotate-2">
-                      <span className="text-4xl font-black tracking-tighter">50%</span>
-                      <span className="text-[10px] font-black uppercase">OFF</span>
-                    </div>
-                  </div>
-                </div>
-              )}
+                  <h2 className="text-6xl font-black tracking-tighter italic leading-none gold-text shimmer-text scale-110">
+                    2026
+                  </h2>
+                  <p className="text-lg font-brand italic text-slate-300">New Year, New Knowledge</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-4">Collect coins to unlock exclusive <span className="text-yellow-500">2026 Platinum Hero</span> status</p>
+               </div>
+               
+               {/* Sparkle Icons around the banner */}
+               <i className="fas fa-sparkles absolute top-6 left-10 text-yellow-500/40 text-xl animate-firework"></i>
+               <i className="fas fa-bolt absolute bottom-6 right-12 text-indigo-400/40 text-lg animate-firework"></i>
             </div>
 
-            {/* QUICK OPTIONS */}
-            <div className="flex overflow-x-auto gap-4 px-1 py-4 no-scrollbar animate-in slide-in-from-right-12 duration-1000 fill-mode-both stagger-2">
-              <QuickOption icon="fa-magic" label="AI Suggest" color="text-pink-500" onClick={() => setActiveView('AI_SUGGEST')} />
-              <QuickOption icon="fa-coins" label="Campus Coin" color="text-yellow-500" onClick={() => setIsCoinPopupOpen(true)} />
-              <QuickOption icon="fa-eye" label="Book Preview" color="text-indigo-500" onClick={() => setActiveView('BOOK_PREVIEW')} />
-              <QuickOption icon="fa-tablet-alt" label="E-Books" color="text-emerald-500" onClick={() => setActiveView('E_BOOKS')} />
+            {/* QUICK OPTIONS - Festive Styled */}
+            <div className="flex overflow-x-auto gap-5 px-1 py-4 no-scrollbar animate-in slide-in-from-right-12 duration-1000 fill-mode-both stagger-2">
+              <QuickOption icon="fa-gift" label="New Year AI" color="text-yellow-500" onClick={() => setActiveView('AI_ASSISTANT')} festive />
+              <QuickOption icon="fa-coins" label="Festive Coins" color="text-yellow-400" onClick={() => setIsCoinPopupOpen(true)} />
+              <QuickOption icon="fa-eye" label="2026 Previews" color="text-indigo-400" onClick={() => setActiveView('BOOK_PREVIEW')} />
+              <QuickOption icon="fa-tablet-alt" label="E-Library" color="text-emerald-400" onClick={() => setActiveView('E_BOOKS')} />
               <QuickOption icon="fa-users" label="Campus Hub" color="text-amber-500" onClick={() => setActiveView('CAMPUS_HUB')} />
             </div>
 
-            <div className="flex justify-between items-center bg-white/40 dark:bg-slate-800/40 backdrop-blur-md px-6 py-4 rounded-[1.5rem] border border-white/20 shadow-sm">
-                <span className="text-[11px] font-black text-black/40 dark:text-white/40 uppercase tracking-widest">Books at <span className={exploreAccentColor}>{user.college}</span></span>
+            <div className="flex justify-between items-center bg-white/40 dark:bg-slate-800/40 backdrop-blur-md px-6 py-4 rounded-[1.5rem] border border-yellow-500/10 shadow-sm">
+                <span className="text-[11px] font-black text-black/40 dark:text-white/40 uppercase tracking-widest">Available Gifts at <span className="text-yellow-600 font-black">{user.college}</span></span>
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <div className="relative"><input type="checkbox" checked={filterCollege} onChange={(e) => setFilterCollege(e.target.checked)} className="sr-only peer"/><div className={`w-10 h-6 bg-slate-100/50 dark:bg-slate-700/50 rounded-full peer-checked:bg-${activeThemeColor}-600`}></div><div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full peer-checked:translate-x-4 shadow-sm transition-transform"></div></div>
+                  <div className="relative"><input type="checkbox" checked={filterCollege} onChange={(e) => setFilterCollege(e.target.checked)} className="sr-only peer"/><div className={`w-10 h-6 bg-slate-100/50 dark:bg-slate-700/50 rounded-full peer-checked:bg-yellow-600`}></div><div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full peer-checked:translate-x-4 shadow-sm transition-transform"></div></div>
                 </label>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 pb-10">
+            <div className="grid grid-cols-2 gap-6 pb-10">
               {processedBooks.map((book, idx) => <BookCard key={book.id} index={idx} book={book} onRequest={startRequest} isRequested={requests.some(r => r.bookId === book.id)} />)}
             </div>
             
-            {/* FLOATING AI ASSISTANT ICON */}
+            {/* FLOATING AI TOOL ICON (Festive Person Figure) */}
             <button 
               onClick={() => setActiveView('AI_ASSISTANT')}
-              className="fixed bottom-24 right-6 z-[130] w-16 h-16 bg-pink-600 dark:bg-indigo-600 text-white rounded-[1.8rem] flex flex-col items-center justify-center shadow-2xl animate-float transition-all hover:scale-110 active:scale-95 border-2 border-white group"
+              className="fixed bottom-24 right-6 z-[130] w-20 h-20 bg-indigo-950 dark:bg-slate-900 text-white rounded-full flex flex-col items-center justify-center shadow-[0_15px_40px_rgba(251,191,36,0.3)] animate-float transition-all hover:scale-110 active:scale-95 border-4 border-yellow-500/40 group"
             >
-              <i className="fas fa-user-astronaut text-xl mb-0.5"></i>
-              <span className="text-[7px] font-black uppercase tracking-tighter">AI Help</span>
-              <div className="absolute -inset-1 border border-white/20 rounded-[2rem] animate-spin-slow pointer-events-none group-hover:border-white/50"></div>
+              <i className="fas fa-person-rays text-3xl mb-1 text-yellow-500"></i>
+              <span className="text-[9px] font-black uppercase tracking-tighter gold-text">2026 AI</span>
+              <div className="absolute -inset-2 border-2 border-yellow-500/20 rounded-full animate-spin-slow pointer-events-none"></div>
+              <div className="absolute -inset-4 border border-indigo-500/10 rounded-full animate-pulse pointer-events-none"></div>
             </button>
-          </ViewContainer>
-        );
-
-      case 'BOOK_PREVIEW':
-        return (
-          <ViewContainer>
-            <div className="flex items-center gap-4 mb-2">
-              <button onClick={() => setActiveView('EXPLORE')} className="w-10 h-10 rounded-xl bg-white/40 dark:bg-slate-800/40 flex items-center justify-center text-slate-500 transition-all"><i className="fas fa-arrow-left"></i></button>
-              <h2 className="text-xl font-black text-black dark:text-white uppercase tracking-tight">AI Book Preview</h2>
-            </div>
-            <div className="space-y-6">
-              <div className="relative group">
-                <div className="absolute -inset-1 rounded-[2.5rem] crystal-border blur opacity-20"></div>
-                <div className="relative flex items-center bg-white/80 dark:bg-white/90 backdrop-blur-3xl rounded-[2.5rem] overflow-hidden border border-white/40 shadow-xl p-2">
-                  <input type="text" placeholder="Enter book title to preview..." className="flex-1 px-6 py-4 bg-transparent text-[11px] font-black text-slate-900 focus:outline-none uppercase placeholder:text-slate-400" value={previewSearch} onChange={(e) => setPreviewSearch(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && handleGetPreview()} />
-                  <button onClick={handleGetPreview} disabled={isLoadingFeature} className="w-14 h-14 bg-indigo-600 text-white rounded-[1.8rem] flex items-center justify-center shadow-lg active:scale-90 transition-all shrink-0">
-                    <i className={isLoadingFeature ? "fas fa-circle-notch fa-spin" : "fas fa-eye"}></i>
-                  </button>
-                </div>
-              </div>
-              {previewResult && (
-                <div className="bg-white/50 p-8 rounded-[3rem] border border-white shadow-2xl animate-in fade-in duration-700 frozen-container">
-                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-600 mb-6">Preview Summary</h3>
-                  <div className="space-y-4">
-                    {previewResult.split('\n').map((line, i) => <p key={i} className="text-sm font-black uppercase text-slate-700 leading-relaxed">• {line.replace(/^\d+\.\s*/, '')}</p>)}
-                  </div>
-                </div>
-              )}
-            </div>
-          </ViewContainer>
-        );
-
-      case 'E_BOOKS':
-        return (
-          <ViewContainer>
-            <div className="flex items-center gap-4 mb-2">
-              <button onClick={() => setActiveView('EXPLORE')} className="w-10 h-10 rounded-xl bg-white/40 dark:bg-slate-800/40 flex items-center justify-center text-slate-500 transition-all"><i className="fas fa-arrow-left"></i></button>
-              <h2 className="text-xl font-black text-black dark:text-white uppercase tracking-tight">E-Book Central</h2>
-            </div>
-            <div className="bg-white/40 dark:bg-slate-900/40 backdrop-blur-3xl p-8 rounded-[3rem] border border-white shadow-xl space-y-6 frozen-container">
-              <div className="grid grid-cols-2 gap-4">
-                <div><label className="text-[9px] font-black uppercase text-slate-400 mb-1 ml-1">Subject</label><input type="text" placeholder="e.g. Physics" className="w-full px-5 py-4 bg-white/60 dark:bg-slate-800/60 rounded-2xl text-sm font-black uppercase border border-white/40 focus:outline-none" value={ebookSearch.subject} onChange={(e) => setEbookSearch({...ebookSearch, subject: e.target.value})} /></div>
-                <div><label className="text-[9px] font-black uppercase text-slate-400 mb-1 ml-1">Semester</label><select className="w-full px-5 py-4 bg-white/60 dark:bg-slate-800/60 rounded-2xl text-sm font-black uppercase border border-white/40 focus:outline-none" value={ebookSearch.semester} onChange={(e) => setEbookSearch({...ebookSearch, semester: e.target.value})}>{[1,2,3,4,5,6,7,8].map(s => <option key={s} value={s}>Semester {s}</option>)}</select></div>
-              </div>
-              <button onClick={handleGetEBooks} disabled={isLoadingFeature} className="w-full py-5 bg-emerald-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all">Fetch Digital Resources</button>
-              {ebookResult && <div className="mt-8 space-y-4 animate-in fade-in duration-700"><h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-600">Resources Found</h3><div className="grid gap-3">{ebookResult.split('\n').map((res, i) => <div key={i} className="p-5 bg-white/40 rounded-3xl border border-white/20 flex items-center justify-between"><span className="text-xs font-black uppercase text-slate-700">{res}</span><i className="fas fa-file-pdf text-emerald-600"></i></div>)}</div></div>}
-            </div>
-          </ViewContainer>
-        );
-
-      case 'MY_REQUESTS':
-        return (
-          <ViewContainer>
-            <h2 className="text-xl font-black text-black dark:text-white uppercase tracking-tight">Sent Requests</h2>
-            <div className="space-y-4">
-              {requests.filter(r => r.borrowerId === user.id).length === 0 ? (
-                <div className="bg-white/40 dark:bg-slate-800/40 p-10 rounded-[2.5rem] text-center border border-white/20 shadow-inner">
-                  <p className="text-slate-400 uppercase font-black tracking-widest text-[10px]">No active requests</p>
-                </div>
-              ) : (
-                requests.filter(r => r.borrowerId === user.id).map(req => {
-                  const book = books.find(b => b.id === req.bookId);
-                  return (
-                    <div key={req.id} className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-3xl p-6 rounded-[2.5rem] border border-white/50 shadow-xl flex justify-between items-center group hover:scale-[1.02] transition-transform">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 flex items-center justify-center">
-                          <i className="fas fa-paper-plane text-xs"></i>
-                        </div>
-                        <div>
-                          <h4 className="text-sm font-black text-slate-900 dark:text-white uppercase truncate max-w-[150px]">{book?.title || 'Unknown Book'}</h4>
-                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Requested • {req.timestamp.toLocaleDateString()}</p>
-                        </div>
-                      </div>
-                      <div className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-sm ${req.status === 'ACCEPTED' ? 'bg-emerald-500 text-white' : req.status === 'REJECTED' ? 'bg-rose-500 text-white' : 'bg-amber-500 text-white animate-pulse'}`}>
-                        {req.status}
-                      </div>
-                    </div>
-                  );
-                })
-              )}
-            </div>
-          </ViewContainer>
-        );
-
-      case 'MY_LISTINGS':
-        const myShelfBooks = books.filter(b => b.donorId === user.id);
-        return (
-          <ViewContainer>
-            <div className="flex justify-between items-center mb-2">
-              <h2 className="text-xl font-black text-black dark:text-white uppercase tracking-tight">My Shelf</h2>
-              <button 
-                onClick={() => setActiveView('ADD_BOOK')}
-                className="px-5 py-2.5 bg-pink-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:bg-pink-700 transition-all"
-              >
-                List New Book
-              </button>
-            </div>
-            {myShelfBooks.length === 0 ? (
-              <div className="bg-white/40 dark:bg-slate-800/40 p-16 rounded-[3rem] text-center border border-dashed border-slate-300 dark:border-slate-700">
-                <i className="fas fa-book-open text-3xl text-slate-200 dark:text-slate-800 mb-4"></i>
-                <p className="text-slate-400 uppercase font-black tracking-widest text-[10px]">Your shelf is empty</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-4">
-                {myShelfBooks.map((book, idx) => (
-                  <BookCard key={book.id} index={idx} book={book} onRequest={() => {}} />
-                ))}
-              </div>
-            )}
-          </ViewContainer>
-        );
-
-      case 'PROFILE':
-        return (
-          <ViewContainer>
-            <h2 className="text-xl font-black text-black dark:text-white uppercase tracking-tight">My Profile</h2>
-            <div className="bg-white/50 dark:bg-slate-900/50 backdrop-blur-3xl p-10 rounded-[3rem] border border-white/50 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/5 rounded-full -mr-32 -mt-32"></div>
-              
-              <div className="flex flex-col items-center text-center mb-10">
-                <div className="w-24 h-24 rounded-[2.5rem] bg-pink-600 text-white flex items-center justify-center text-4xl font-black shadow-2xl shadow-pink-200 dark:shadow-none mb-4 ring-8 ring-white/20 dark:ring-white/5">
-                  {user.name.charAt(0)}
-                </div>
-                <h3 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">{user.name}</h3>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.2em]">{user.college}</p>
-                <div className="mt-4 flex items-center gap-2 bg-yellow-400/20 text-yellow-600 px-4 py-1.5 rounded-full border border-yellow-400/20">
-                  <i className="fas fa-coins text-xs"></i>
-                  <span className="text-[10px] font-black uppercase tracking-widest">{user.campusCoins} Campus Coins</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                <div className="bg-white/40 dark:bg-slate-800/40 p-6 rounded-3xl border border-white/20 text-center">
-                  <span className="text-[9px] font-black text-slate-400 uppercase block mb-1 tracking-widest">Donations</span>
-                  <span className="text-2xl font-black text-pink-600 tracking-tighter">{user.donationScore}</span>
-                </div>
-                <div className="bg-white/40 dark:bg-slate-800/40 p-6 rounded-3xl border border-white/20 text-center">
-                  <span className="text-[9px] font-black text-slate-400 uppercase block mb-1 tracking-widest">Status</span>
-                  <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">{user.donationScore >= 10 ? 'Campus Hero' : 'Rising Star'}</span>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl flex items-center gap-4 border border-white/20">
-                  <i className="fas fa-graduation-cap text-slate-400 w-5"></i>
-                  <span className="text-[10px] font-black uppercase text-slate-600 dark:text-slate-300">{user.branch} • {user.year}</span>
-                </div>
-                <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl flex items-center gap-4 border border-white/20">
-                  <i className="fas fa-envelope text-slate-400 w-5"></i>
-                  <span className="text-[10px] font-black uppercase text-slate-600 dark:text-slate-300">{user.email}</span>
-                </div>
-              </div>
-            </div>
-          </ViewContainer>
-        );
-
-      case 'SETTINGS':
-        return (
-          <ViewContainer>
-            <h2 className="text-xl font-black text-black dark:text-white uppercase tracking-tight">Theme Customizer</h2>
-            <div className="grid grid-cols-2 gap-4">
-              {([
-                { id: 'CLASSIC', name: 'Classic', colors: ['bg-pink-500', 'bg-rose-500', 'bg-indigo-500'] },
-                { id: 'CYBERPUNK', name: 'Cyberpunk', colors: ['bg-purple-500', 'bg-fuchsia-500', 'bg-yellow-400'] },
-                { id: 'OCEAN', name: 'Ocean', colors: ['bg-cyan-500', 'bg-blue-500', 'bg-teal-500'] },
-                { id: 'MIDNIGHT', name: 'Midnight', colors: ['bg-slate-700', 'bg-neutral-800', 'bg-rose-900'] },
-              ] as const).map((palette) => (
-                <button key={palette.id} onClick={() => setThemePalette(palette.id)} className={`relative p-5 rounded-[2rem] border-4 transition-all overflow-hidden frozen-container ${themePalette === palette.id ? `border-${activeThemeColor}-500 scale-105 shadow-2xl` : 'border-white/20 bg-white/40 dark:bg-slate-800/40'}`}>
-                  <div className="flex gap-2 mb-3">{palette.colors.map((c, i) => <div key={i} className={`w-6 h-6 rounded-full ${c} shadow-sm ring-2 ring-white`}></div>)}</div>
-                  <span className="text-xs font-black uppercase tracking-widest text-black dark:text-white">{palette.name}</span>
-                </button>
-              ))}
-            </div>
-          </ViewContainer>
-        );
-
-      case 'ADD_BOOK':
-        return (
-          <AddBookForm 
-            user={user} 
-            onAdd={(bookData) => {
-              const newBook: Book = { ...bookData, id: `book_${Date.now()}` } as Book;
-              setBooks(prev => [newBook, ...prev]);
-              setActiveView('MY_LISTINGS');
-              showNotification("Book listed successfully!", "success");
-            }} 
-            onCancel={() => setActiveView('MY_LISTINGS')} 
-          />
-        );
-
-      case 'FEEDBACK':
-        return (
-          <FeedbackForm user={user} onSubmit={() => { showNotification("Feedback received!", "success"); setActiveView('EXPLORE'); }} />
-        );
-
-      case 'LANGUAGE_PICKER':
-        return (
-          <ViewContainer>
-            <h2 className="text-xl font-black text-black dark:text-white uppercase tracking-tight">{t.selectLanguage}</h2>
-            <div className="grid gap-3">
-              {(Object.keys(languageNames) as Language[]).map((lang) => (
-                <button 
-                  key={lang}
-                  onClick={() => { setLanguage(lang); setActiveView('SETTINGS'); }}
-                  className={`p-6 rounded-[2rem] text-sm font-black uppercase tracking-widest transition-all backdrop-blur-md frozen-container frozen-shimmer-overlay ${language === lang ? `bg-${activeThemeColor}-600 text-white shadow-xl scale-[1.02]` : 'bg-white/40 dark:bg-slate-800/40 dark:text-white border border-white/20 hover:translate-x-1'}`}
-                >
-                  <div className="relative z-20">{languageNames[lang]}</div>
-                </button>
-              ))}
-            </div>
           </ViewContainer>
         );
 
@@ -687,7 +345,7 @@ const App: React.FC = () => {
   };
 
   const handleGetAISuggestion = async () => {
-    if (!aiSuggestForm.course || !aiSuggestForm.semester) { showNotification("Please fill all fields", "warning"); return; }
+    if (!aiSuggestForm.course || !aiSuggestForm.semester) { showNotification("Provide course details for 2026", "warning"); return; }
     setIsLoadingFeature(true);
     const res = await getBookRecommendation(aiSuggestForm.course, aiSuggestForm.semester);
     setAiRecommendation(res);
@@ -712,18 +370,29 @@ const App: React.FC = () => {
 
   if (isBooting) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500 transition-colors">
-        <div className={`relative w-32 h-32 bg-${activeThemeColor}-600 rounded-[2.8rem] flex items-center justify-center mb-10 shadow-2xl animate-bounce border-4 border-white/20`}>
-          <i className="fas fa-book text-white text-5xl"></i>
+      <div className="min-h-screen bg-[#020617] flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-700 transition-colors">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
+           <div className="absolute top-10 left-10 w-4 h-4 bg-yellow-500 rounded-full animate-firework"></div>
+           <div className="absolute top-40 right-20 w-6 h-6 bg-red-500 rounded-full animate-firework"></div>
+           <div className="absolute bottom-20 left-1/2 w-8 h-8 bg-blue-500 rounded-full animate-firework"></div>
         </div>
-        <h2 className="text-4xl tracking-tighter uppercase text-slate-900 dark:text-white font-black italic">
-          CAMPUS <span className="text-pink-600 shimmer-text">SHELF</span>
+        
+        <div className="relative w-40 h-40 bg-slate-900 rounded-[3.5rem] flex items-center justify-center mb-12 shadow-2xl animate-float border-4 border-yellow-500/40">
+          <i className="fas fa-glass-cheers text-yellow-500 text-6xl"></i>
+          <div className="absolute -inset-4 border-2 border-yellow-500/20 rounded-[4rem] animate-spin-slow"></div>
+        </div>
+        <h2 className="text-6xl tracking-tighter uppercase text-white font-black italic gold-text shimmer-text">
+          2026
         </h2>
+        <h3 className="text-xl font-brand italic text-slate-400 mt-2 tracking-[0.2em]">HAPPY NEW YEAR</h3>
+        <div className="mt-10 flex gap-4">
+           <div className="w-4 h-4 bg-yellow-500 rounded-full animate-pulse"></div>
+           <div className="w-4 h-4 bg-yellow-600 rounded-full animate-pulse delay-150"></div>
+           <div className="w-4 h-4 bg-yellow-700 rounded-full animate-pulse delay-300"></div>
+        </div>
       </div>
     );
   }
-
-  if (!isLoggedIn) return <LoginView onLogin={handleLogin} />;
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-500 overflow-x-hidden">
@@ -737,57 +406,57 @@ const App: React.FC = () => {
         <NotificationBar message={notification?.message || null} type={notification?.type} theme={activeThemeColor as any} onClose={() => setNotification(null)} />
         <div className="transition-all duration-500">{renderView()}</div>
         
-        {/* MOVABLE CAMPUS COIN POP-UP */}
+        {/* FESTIVE CAMPUS COIN POP-UP */}
         {isCoinPopupOpen && (
           <div 
             style={{ left: coinPos.x, top: coinPos.y }}
-            className={`fixed z-[140] w-80 select-none touch-none bg-white/90 dark:bg-slate-900/95 backdrop-blur-3xl rounded-[3rem] border-[3px] border-white shadow-[0_30px_60px_rgba(0,0,0,0.2)] animate-in zoom-in-90 duration-300 frozen-container frozen-shimmer-overlay ${isDragging ? 'scale-105 cursor-grabbing opacity-90' : 'cursor-grab'} transition-transform`}
+            className={`fixed z-[140] w-80 select-none touch-none bg-slate-900/95 backdrop-blur-3xl rounded-[3.5rem] border-[3px] border-yellow-500/40 shadow-[0_30px_60px_rgba(0,0,0,0.5)] animate-in zoom-in-90 duration-300 frozen-container frozen-shimmer-overlay ${isDragging ? 'scale-105 cursor-grabbing opacity-90' : 'cursor-grab'} transition-transform`}
           >
             <div 
               onMouseDown={onMouseDown}
-              className="h-14 w-full flex items-center justify-center border-b border-black/5 dark:border-white/5 active:bg-slate-50 dark:active:bg-slate-800 transition-colors rounded-t-[3rem]"
+              className="h-14 w-full flex items-center justify-center border-b border-white/10 active:bg-slate-800 transition-colors rounded-t-[3.5rem]"
             >
-              <div className="w-16 h-2 bg-slate-300 dark:bg-slate-700 rounded-full shadow-inner"></div>
+              <div className="w-16 h-2 bg-yellow-500/20 rounded-full shadow-inner"></div>
             </div>
 
-            <div className="p-10">
+            <div className="p-10 text-white">
               <div className="flex justify-between items-start mb-8">
                 <div>
-                   <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-amber-600 mb-2">My Treasures</h3>
+                   <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-yellow-500 mb-2">2026 Treasures</h3>
                    <div className="flex items-center gap-3">
-                     <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center shadow-inner">
-                       <i className="fas fa-coins text-amber-500 text-2xl animate-float"></i>
+                     <div className="w-14 h-14 rounded-2xl bg-yellow-500/10 flex items-center justify-center shadow-inner border border-yellow-500/20">
+                       <i className="fas fa-certificate text-yellow-500 text-3xl animate-float"></i>
                      </div>
-                     <span className="text-4xl font-black tracking-tighter italic text-slate-900 dark:text-white">{user.campusCoins}</span>
+                     <span className="text-5xl font-black tracking-tighter italic gold-text">{user.campusCoins}</span>
                    </div>
                 </div>
-                <button onClick={() => setIsCoinPopupOpen(false)} className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all active:scale-90">
+                <button onClick={() => setIsCoinPopupOpen(false)} className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-slate-400 hover:text-yellow-500 transition-all active:scale-90">
                   <i className="fas fa-times text-sm"></i>
                 </button>
               </div>
 
-              <div className="relative h-4 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mb-8 border border-white shadow-inner">
+              <div className="relative h-4 bg-slate-800 rounded-full overflow-hidden mb-8 border border-yellow-500/10 shadow-inner">
                 <div 
-                  className="h-full bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-400 shadow-[0_0_20px_rgba(251,191,36,0.5)] transition-all duration-1000 ease-out"
-                  style={{ width: `${Math.min((user.campusCoins / 30) * 100, 100)}%` }}
+                  className="h-full bg-gradient-to-r from-yellow-400 via-yellow-600 to-yellow-400 shadow-[0_0_20px_rgba(251,191,36,0.5)] transition-all duration-1000 ease-out"
+                  style={{ width: `${Math.min((user.campusCoins / 50) * 100, 100)}%` }}
                 >
-                  <div className="absolute inset-0 bg-white/20 animate-shimmer" style={{ backgroundSize: '200% 100%' }}></div>
+                  <div className="absolute inset-0 bg-white/10 animate-shimmer" style={{ backgroundSize: '200% 100%' }}></div>
                 </div>
               </div>
 
-              <div className={`p-6 rounded-[2rem] border-2 text-center transition-all ${user.campusCoins >= 30 ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-slate-50/50 dark:bg-slate-800/50 border-white/40'}`}>
-                 <p className={`text-[10px] font-black uppercase tracking-widest leading-relaxed ${user.campusCoins >= 30 ? 'text-emerald-600' : 'text-slate-500'}`}>
-                   {user.campusCoins >= 30 
-                     ? "Discount Activated! 70% Off your next purchase." 
-                     : `You are ${(30 - user.campusCoins)} coins away from 70% discount.`}
+              <div className={`p-6 rounded-[2rem] border-2 text-center transition-all ${user.campusCoins >= 50 ? 'bg-yellow-500/10 border-yellow-500/30' : 'bg-white/5 border-white/10'}`}>
+                 <p className={`text-[10px] font-black uppercase tracking-widest leading-relaxed ${user.campusCoins >= 50 ? 'text-yellow-400' : 'text-slate-400'}`}>
+                   {user.campusCoins >= 50 
+                     ? "Platinum Discount Activated! Celebrate 2026 with 80% Off." 
+                     : `Reach 50 Coins for Platinum 2026 Rewards.`}
                  </p>
               </div>
 
               <button 
                 onClick={() => setIsCoinPopupOpen(false)}
-                className="w-full mt-8 py-5 bg-pink-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.4em] shadow-xl hover:bg-pink-700 active:scale-95 transition-all shadow-pink-100"
+                className="w-full mt-8 py-5 bg-yellow-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.4em] shadow-xl hover:bg-yellow-700 active:scale-95 transition-all"
               >
-                Back to Shelf
+                Let's Celebrate
               </button>
             </div>
           </div>
@@ -797,11 +466,11 @@ const App: React.FC = () => {
   );
 };
 
-const QuickOption: React.FC<{ icon: string; label: string; color: string; onClick: () => void }> = ({ icon, label, color, onClick }) => (
-  <button onClick={onClick} className="min-w-[130px] h-[130px] flex flex-col items-center justify-center gap-3 bg-white/80 dark:bg-white/90 backdrop-blur-3xl border-2 border-white/50 rounded-[2.5rem] shadow-xl transition-all active:scale-90 hover:scale-[1.05] frozen-container frozen-shimmer-overlay group shrink-0 relative overflow-hidden">
-    <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-white/20 pointer-events-none"></div>
-    <div className={`w-12 h-12 rounded-2xl bg-white/40 dark:bg-slate-800/40 backdrop-blur-md flex items-center justify-center shadow-inner border border-white/30 ${color} transition-all group-hover:rotate-6 group-hover:scale-110 relative z-20`}><i className={`fas ${icon} text-xl`}></i></div>
-    <span className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-slate-100 leading-tight px-2 text-center relative z-20">{label}</span>
+const QuickOption: React.FC<{ icon: string; label: string; color: string; onClick: () => void; festive?: boolean }> = ({ icon, label, color, onClick, festive }) => (
+  <button onClick={onClick} className={`min-w-[140px] h-[140px] flex flex-col items-center justify-center gap-3 bg-white/90 dark:bg-slate-900/95 backdrop-blur-3xl border-2 ${festive ? 'border-yellow-500/40 shadow-[0_10px_30px_rgba(251,191,36,0.2)]' : 'border-white/50 shadow-xl'} rounded-[3rem] transition-all active:scale-90 hover:scale-[1.08] frozen-container frozen-shimmer-overlay group shrink-0 relative overflow-hidden`}>
+    <div className="absolute inset-0 bg-gradient-to-tr from-yellow-500/5 via-transparent to-white/10 pointer-events-none"></div>
+    <div className={`w-14 h-14 rounded-2xl bg-white/40 dark:bg-slate-800/40 backdrop-blur-md flex items-center justify-center shadow-inner border border-white/30 ${color} transition-all group-hover:rotate-6 group-hover:scale-110 relative z-20`}><i className={`fas ${icon} text-2xl`}></i></div>
+    <span className={`text-[11px] font-black uppercase tracking-widest ${festive ? 'gold-text' : 'text-slate-900 dark:text-slate-100'} leading-tight px-2 text-center relative z-20`}>{label}</span>
   </button>
 );
 
