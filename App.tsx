@@ -77,10 +77,10 @@ const App: React.FC = () => {
   const [darkMode, setDarkMode] = useState<boolean>(() => localStorage.getItem('darkMode') === 'true');
 
   useEffect(() => {
-    // Satisfying boot sequence duration
+    // Satisfying boot sequence duration with gradual loading
     const timer = setTimeout(() => {
       setIsBooting(false);
-    }, 3200);
+    }, 4000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -472,30 +472,43 @@ const App: React.FC = () => {
   if (isBooting) {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-center overflow-hidden transition-all duration-1000">
-        {/* Layered Satisfying Boot Sequence */}
-        <div className="perspective-lg mb-12">
-           <div className="w-56 h-72 bg-slate-900 rounded-[3rem] border-4 border-yellow-500/30 flex items-center justify-center shadow-[0_0_100px_rgba(191,149,63,0.3)] animate-book-flip relative preserve-3d">
-              <i className="fas fa-book-sparkles text-yellow-500 text-9xl absolute backface-hidden"></i>
-              <div className="absolute inset-0 bg-yellow-500/5 rounded-[2.8rem] animate-pulse-slow"></div>
-           </div>
+        {/* Satisfying Multi-layered Boot sequence */}
+        <div className="perspective-lg mb-16 relative">
+          {/* Cascading Magical Books */}
+          <div className="flex items-end gap-2 h-40">
+             <div className="w-12 h-32 bg-yellow-600/20 rounded-t-2xl border-x-2 border-t-2 border-yellow-500/30 animate-magical-entrance [animation-delay:0ms]"></div>
+             <div className="w-16 h-40 bg-slate-900 rounded-t-3xl border-x-4 border-t-4 border-yellow-500/40 flex items-center justify-center shadow-[0_-20px_50px_rgba(191,149,63,0.2)] animate-magical-entrance [animation-delay:300ms]">
+                <div className="w-10 h-10 animate-book-flip preserve-3d">
+                  <i className="fas fa-book-sparkles text-yellow-500 text-4xl"></i>
+                </div>
+             </div>
+             <div className="w-12 h-28 bg-yellow-600/10 rounded-t-2xl border-x-2 border-t-2 border-yellow-500/20 animate-magical-entrance [animation-delay:600ms]"></div>
+          </div>
+          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-48 h-2 bg-yellow-500/20 rounded-full blur-xl animate-pulse"></div>
         </div>
 
-        <div className="space-y-4">
-          <h2 className="text-9xl font-black gold-text shimmer-text italic tracking-tighter select-none animate-reveal-word">
-            2026
-          </h2>
-          <div className="relative h-1 w-64 bg-slate-900 rounded-full mx-auto overflow-hidden">
-             <div className="absolute top-0 left-0 h-full bg-yellow-600 animate-progress-fill"></div>
+        <div className="space-y-6 max-w-sm w-full">
+          <div className="overflow-hidden">
+            <h2 className="text-8xl font-black gold-text shimmer-text italic tracking-tighter select-none animate-reveal-word uppercase">
+              2026
+            </h2>
           </div>
-          <h3 className="text-xl font-brand italic text-slate-400 tracking-[0.5em] uppercase animate-reveal-word opacity-0 [animation-delay:400ms]">
-            Campus Shelf
-          </h3>
+          
+          <div className="relative h-1.5 w-full bg-slate-900 rounded-full overflow-hidden border border-white/5">
+             <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-yellow-700 via-yellow-500 to-yellow-300 animate-progress-fill"></div>
+          </div>
+          
+          <div className="overflow-hidden">
+            <h3 className="text-xl font-brand italic text-slate-400 tracking-[0.4em] uppercase animate-reveal-word opacity-0 [animation-delay:800ms] select-none">
+              Knowledge Sync
+            </h3>
+          </div>
         </div>
 
         {/* Ambient background particles */}
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-yellow-500 rounded-full animate-float opacity-40"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-3 h-3 bg-yellow-500 rounded-full animate-float opacity-20 [animation-delay:1s]"></div>
-        <div className="absolute top-1/2 right-1/3 w-1 h-1 bg-yellow-500 rounded-full animate-float opacity-30 [animation-delay:1.5s]"></div>
+        <div className="absolute top-20 left-10 w-2 h-2 bg-yellow-500 rounded-full animate-float opacity-30"></div>
+        <div className="absolute bottom-40 right-10 w-3 h-3 bg-yellow-500 rounded-full animate-float opacity-10 [animation-delay:2s]"></div>
+        <div className="absolute top-1/2 left-1/3 w-1 h-1 bg-yellow-500 rounded-full animate-float opacity-20 [animation-delay:1.5s]"></div>
       </div>
     );
   }

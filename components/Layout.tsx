@@ -67,23 +67,29 @@ const Layout: React.FC<LayoutProps> = ({
       <header className="sticky top-0 z-[100] bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl border-b border-yellow-500/10 shadow-xl transition-all duration-500">
         <div className="p-5 flex items-center justify-between gap-6 max-w-7xl mx-auto w-full">
           
-          {/* Unique Logo: 3D Flip Book with Excellence Sparks */}
+          {/* Satisfying Animated Logo: Cascading Animated Books */}
           <div className="flex items-center gap-4 shrink-0 group cursor-pointer" onClick={() => handleNav('EXPLORE')}>
-            <div className="relative w-16 h-16 rounded-[2.2rem] bg-slate-950 text-yellow-500 flex items-center justify-center shadow-2xl transition-all duration-500 group-hover:scale-110 border border-yellow-500/20 overflow-visible perspective-lg">
-              <div className="w-10 h-10 flex items-center justify-center animate-book-flip preserve-3d">
-                <i className="fas fa-book-sparkles text-3xl"></i>
+            <div className="relative w-16 h-16 rounded-[2.2rem] bg-slate-950 text-yellow-500 flex items-center justify-center shadow-2xl transition-all duration-500 group-hover:scale-110 border border-yellow-500/20 overflow-visible">
+              <div className="relative flex flex-col items-center justify-center translate-y-1 group-hover:translate-y-0 transition-transform duration-500">
+                {/* Book Stack Animation */}
+                <i className="fas fa-book text-[10px] opacity-40 -mb-2 translate-y-2 group-hover:translate-y-0 transition-all duration-500"></i>
+                <i className="fas fa-book text-[14px] opacity-60 -mb-2 translate-y-1 group-hover:translate-y-0 transition-all duration-700"></i>
+                <i className="fas fa-book-open text-3xl animate-page-flutter shadow-yellow-500/20 drop-shadow-lg"></i>
               </div>
-              <div className="absolute top-[-10%] left-[-10%] w-full h-full bg-yellow-400/10 blur-2xl animate-pulse"></div>
-              {/* Sparkles around logo */}
-              <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-500 rounded-full animate-glitter shadow-lg shadow-yellow-500/50"></div>
+              
+              {/* Magic Orbs around logo */}
+              <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full animate-glitter shadow-lg shadow-yellow-500/50"></div>
               <div className="absolute -bottom-1 -left-1 w-1.5 h-1.5 bg-yellow-200 rounded-full animate-glitter [animation-delay:0.5s]"></div>
+              
+              {/* Satisfying background glow */}
+              <div className="absolute inset-0 bg-yellow-500/10 rounded-full blur-2xl group-hover:bg-yellow-500/20 transition-all"></div>
             </div>
             
             <div className="flex flex-col leading-none">
-              <h1 className="font-black italic text-2xl tracking-tighter uppercase gold-text leading-tight select-none">
+              <h1 className="font-black italic text-2xl tracking-tighter uppercase gold-text leading-tight select-none group-hover:tracking-normal transition-all duration-500">
                 CAMPUS
               </h1>
-              <span className="font-brand italic text-[11px] tracking-[0.45em] text-slate-500 dark:text-slate-400 animate-glitter uppercase select-none">
+              <span className="font-brand italic text-[11px] tracking-[0.45em] text-slate-500 dark:text-slate-400 animate-glitter uppercase select-none group-hover:tracking-[0.3em] transition-all duration-500">
                 Shelf 2026
               </span>
             </div>
